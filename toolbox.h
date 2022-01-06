@@ -40,6 +40,7 @@ int getArraySize(std::string pathToFileList, std::string pathToDataFolder);
 
 int getColumn(int col, int totalCols, double *arr);
 
+void writeArrayToFile(int size, double* arr1, double* arr2);
 
   
 #endif

@@ -83,7 +83,7 @@ int getColumn(int col, int totalCols, double *arr){
 
 
 
-/*
+
 void writeToFile(int sieveSize){
 
   ofstream file("data.csv");
@@ -171,7 +171,7 @@ name);
 
 
 
-void writeToFile3(int size, double* arr1, double* arr2){
+void writeArrayToFile(int size, double* arr1, double* arr2){
 
   ofstream file("data.csv");
   int arrCounter = 0;
@@ -193,4 +193,4 @@ void idealLowPass(int cutoff, double* arr, double* res){
 
 
 }
-*/
+

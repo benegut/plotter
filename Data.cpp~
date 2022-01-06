@@ -1,0 +1,39 @@
+#include <string>
+#include <vector>
+#include <fstream>
+
+
+class Data{
+
+private:
+  std::string nameOfDataFolder;
+  std::string pathToFileList = "list.txt";
+
+public:
+
+  void setPathToFolder(std::string nameOfDataFolder){
+    this->nameOfDataFolder = nameOfDataFolder;
+  }
+
+  std::vector<double> dataVec;
+  
+  void getData(){
+
+    
+  }
+
+  
+  Data(std::string nameOfDataFolder){
+    setPathToFolder(nameOfDataFolder);
+    std::string exec = "#/bin/bash\ncd Measurements/" + nameOfDataFolder + "\nls -1 > " + pathToFileList;
+    system(exec.c_str());
+    
+  }
+
+};
+
+
+int main(){
+
+  Data testData("20211202-0002");
+}
