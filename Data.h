@@ -9,16 +9,19 @@ class Data{
 
  private:
   std::string nameOfDataFolder;
-  std::string pathToFileList;
   
  public:
-  void setPathToFolder(std::string nameOfDataFolder);
+  void setPathToFolder(std::string);
 
-  std::vector<double> dataVec;
+  typedef std::vector<double> Vec;
+  typedef std::vector<Vec> Mat;
 
+  Vec row;
+  Mat data;
+  
   void getData();
 
-  Data(std::string nameOfDataFolder);
+  Data(std::string);
   
 };
 
