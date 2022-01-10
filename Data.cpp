@@ -15,6 +15,63 @@ void Data::setPathToFolder(std::string nameOfDataFolder){
 
 
 
+int Data::getRowSize(std::string nameOfDataFolder){
+
+  std::string filename;
+  std::ifstream listfile("list.txt");
+  int counterFiles = 0;
+  int counterLines = 0;
+
+
+  while(std::getline(listfile, filename)){
+
+    std::ifstream datafile("Measurements/" + nameOfDataFolder + "/" + filename);
+    std::string lines;
+
+    //std::cout << "/Measurements/" + nameOfDataFolder + "/" + filename << '\n';                                    
+
+    while(std::getline(datafile,lines)){
+      //      std::cout << lines << '\n';                                                      
+      counterLines++;}
+
+    datafile.close();
+    counterFiles++;
+  }
+
+  listfile.close();
+
+  int arraySize = counterLines - counterFiles*3;
+  //  int arraySize = counterLines; //ignore headerlines for now                               
+  return arraySize;
+}
+
+
+
+int Data::getColSize(std::string nameOfDataFolder){
+
+  int counterTabs = 0.0;
+  std::string filename;
+  std::ifstream listfile("list.txt");
+  
+  std::getline(listfile, filename);
+
+  std::ifstream datafile("Measurements/" + nameOfDataFolder + "/" + filename);
+  std::string line;
+  
+  std::getline(datafile, line);
+  
+  std::stringstream ss(line);
+  std::string num;
+      
+  while(std::getline(ss, num, '\t'))
+    counterTabs++;
+
+  return counterTabs;
+}
+
+
+
+
 
 void Data::getData(){
 }
@@ -23,7 +80,11 @@ void Data::getData(){
 
 
 Data::Data(std::string nameOfDataFolder){
-  Data::setPathToFolder(nameOfDataFolder);
+
+  int rowSize = Data::getRowSize(nameOfDataFolder);
+  int colSize = Data::getColSize(nameOfDataFolder);
+
+  Data::setPathToFolder(Data::nameOfDataFolder);
   std::string exec = "#/bin/bash\ncd Measurements/" + nameOfDataFolder + "\nls -1 > ../../list.txt";
   system(exec.c_str());
 

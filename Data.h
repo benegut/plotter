@@ -18,6 +18,11 @@ class Data{
 
   Vec row;
   Mat data;
+
+
+  int getRowSize(std::string);
+
+  int getColSize(std::string);
   
   void getData();
 
