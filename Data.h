@@ -13,13 +13,8 @@ class Data{
  public:
   void setPathToFolder(std::string);
 
-  typedef std::vector<double> Vec;
-  typedef std::vector<Vec> Mat;
-
-  Vec row;
-  Mat data;
-
-
+  long double **data;
+  
   int getRowSize(std::string);
 
   int getColSize(std::string);
