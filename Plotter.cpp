@@ -11,5 +11,5 @@
 int main(int argc, char* argv[]){
   
   Data testData("20211202-0002");
-  std::cout << testData.data[0][0] << std::endl;
+  std::cout << testData.data[1][1] << std::endl;
 }

@@ -1,4 +1,3 @@
-//#include <boost/numeric/ublas/matrix.hpp>
 #include <string>
 #include <vector>
 #include <fstream>
@@ -33,11 +32,7 @@ int Data::getRowSize(std::string nameOfDataFolder){
 
     while(std::getline(datafile,lines)){
       //      std::cout << lines << '\n';
-      try{
-	stod()
-	counterLines++;
-	
-      }
+      counterLines++;
     }
 
     datafile.close();
@@ -79,7 +74,11 @@ int Data::getColSize(std::string nameOfDataFolder){
 
 
 
+void Data::cleanUpMatrix(long double **inputMat, long double **outputMat){
 
+
+
+}
 
 
 
@@ -117,15 +116,11 @@ Data::Data(std::string nameOfDataFolder){
       std::stringstream ss(line);
       std::string num;
       int j = 0;
-
+      
       while(getline(ss, num, '\t')){
-
-	try{
-	  matrix[i][j] = stold(num);
-	}
-	catch(std::exception& e){
-	  break;
-	}
+	
+	try{matrix[i][j] = stold(num);}
+	catch(std::exception& e){i--;break;}
 	j++;
       }
       i++;

@@ -18,6 +18,8 @@ class Data{
   int getRowSize(std::string);
 
   int getColSize(std::string);
+
+  void cleanUpMatrix(long double **, long double **);
   
   void getData();
 
