@@ -8,11 +8,11 @@
 #include "Data.h"
 
 
-/*
+
 void Data::set_Path_To_Folder(std::string nameOfDataFolder){
   Data::nameOfDataFolder = nameOfDataFolder;
 }
-*/
+
 
 
 void Data::get_Row_Size(){
@@ -71,7 +71,7 @@ void Data::get_Col_Size(){
 
 
 
-void generate_File_List(){
+void Data::generate_File_List(){
   std::string exec = "#/bin/bash\ncd Measurements/" + Data::nameOfDataFolder + "\nls -1 > ../../list.txt";
   system(exec.c_str());
   
@@ -116,8 +116,11 @@ void Data::read_Files(){
 
 void Data::clean_Up_Matrix(){
 
-  for(int i=0; i!=Data::rowSize; i++)
+  for(int i=0; i!=Data::rowSize; i++){
     for(int j=0; j!=Data::colSize; j++){
+      
+
+    }
   }
 }
 
@@ -128,13 +131,27 @@ void Data::choose_Data(){
 
 
 
+Data::Data(){
+  std::cout << "*****************************************" << std::endl;
+  std::cout << "No folder was selected. Call a Data object with the name of a folder in /Measurements." << std::endl;
+  std::cout << "*****************************************" << std::endl;
+}
+
+
  
 Data::Data(std::string nameOfDataFolder){
-  //  Data::nameOfDataFolder = nameOfDataFolder;
   Data::set_Path_To_Folder(nameOfDataFolder);
   Data::get_Row_Size();
   Data::get_Col_Size();
   Data::generate_File_List();
   Data::read_Files();
   Data::clean_Up_Matrix();
+}
+
+
+
+Data::~Data(){
+  for (int i = 0; i < Data::rowSize; ++i)
+    delete [] Data::data[i];
+  delete [] Data::data;
 }

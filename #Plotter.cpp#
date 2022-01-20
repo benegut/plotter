@@ -10,7 +10,6 @@
 
 int main(int argc, char* argv[]){
   
-  //Data testData("20211202-0002");
-  Data testData;
-  //  std::cout << testData.data[1][1] << std::endl;
+  Data testData("20211202-0002");
+  std::cout << testData.data[1][1] << std::endl;
 }
