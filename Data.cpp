@@ -1,4 +1,5 @@
 #include <string>
+#include <cmath>
 #include <vector>
 #include <fstream>
 #include <sstream>
@@ -9,8 +10,24 @@
 
 
 
+void Data::err_No_Folder(){
+  std::cout << "*****************************************" << std::endl;
+  std::cout << "No folder was selected. Call a Data object with the name of a folder in /Measurements." << std::endl;
+  std::cout << "*****************************************" << std::endl;
+}
+
+
+
 void Data::set_Path_To_Folder(std::string nameOfDataFolder){
   Data::nameOfDataFolder = nameOfDataFolder;
+}
+
+
+
+void Data::generate_File_List(){
+  std::string exec = "#/bin/bash\ncd Measurements/" + Data::nameOfDataFolder + "\nls -1 > ../../list.txt";
+  system(exec.c_str());
+  
 }
 
 
@@ -22,25 +39,18 @@ void Data::get_Row_Size(){
   int counterFiles = 0;
   int counterLines = 0;
 
-
   while(std::getline(listfile, filename)){
-
     std::ifstream datafile("Measurements/" + Data::nameOfDataFolder + "/" + filename);
     std::string lines;
 
-    while(std::getline(datafile,lines)){
+    while(std::getline(datafile,lines))
       counterLines++;
-    }
-
+      
     datafile.close();
     counterFiles++;
   }
-
   listfile.close();
-
-  int arraySize = counterLines;// - counterFiles*3;
-  //  int arraySize = counterLines; //ignore headerlines for now                               
-  Data::rowSize = arraySize;
+  Data::rowSize = counterLines;
 }
 
 
@@ -69,13 +79,6 @@ void Data::get_Col_Size(){
   Data::colSize = counterTabs;
 }
 
-
-
-void Data::generate_File_List(){
-  std::string exec = "#/bin/bash\ncd Measurements/" + Data::nameOfDataFolder + "\nls -1 > ../../list.txt";
-  system(exec.c_str());
-  
-}
 
 
 
@@ -114,27 +117,41 @@ void Data::read_Files(){
 
 
 
+void Data::delete_Row(int rowIndex){
+  for(int i=rowIndex;i!=Data::rowSize-1;i++)
+    Data::data[i] = Data::data[i+1];
+  //  delete [] Data::data[Data::rowSize];
+  --Data::rowSize;
+}
+
+
+
 void Data::clean_Up_Matrix(){
 
   for(int i=0; i!=Data::rowSize; i++){
     for(int j=0; j!=Data::colSize; j++){
-      
-
+      if(std::isnan(Data::data[i][j])){
+	Data::delete_Row(i);
+	break;
+      }
+      else if(std::abs(Data::data[i][j]) < 10e-10){
+	Data::delete_Row(i);
+	i--;
+	break;
+      }
     }
   }
 }
 
 
 
-void Data::choose_Data(){
-}
+
+void Data::choose_Data(){}
 
 
 
 Data::Data(){
-  std::cout << "*****************************************" << std::endl;
-  std::cout << "No folder was selected. Call a Data object with the name of a folder in /Measurements." << std::endl;
-  std::cout << "*****************************************" << std::endl;
+  Data::err_No_Folder();
 }
 
 
@@ -154,4 +171,18 @@ Data::~Data(){
   for (int i = 0; i < Data::rowSize; ++i)
     delete [] Data::data[i];
   delete [] Data::data;
+}
+
+
+
+
+void Data::print(){
+  for(int i=0; i!=Data::rowSize; i++){
+    std::cout << &Data::data[i] << " " << Data::data[i] << " ";
+    for(int j=0; j!=Data::colSize; j++)
+      std::cout  << &Data::data[i][j] << " ";
+      //      std::cout << Data::data[i][j] << " ";
+    std::cout << std::endl;
+    if(i==10){break;}
+  }
 }
