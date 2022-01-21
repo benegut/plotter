@@ -24,6 +24,7 @@ class Raw_Data{
   void print();
   void print_Col_To_File(int);
   void print_Col_To_File(int, int);
+  void plot_Col(int,int);
   Raw_Data();
   Raw_Data(std::string);
   ~Raw_Data();

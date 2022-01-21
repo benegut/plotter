@@ -10,7 +10,7 @@
 
 int main(int argc, char* argv[]){
 
-  Raw_Data testData("20211202-0002");
+  Raw_Data testData("320mA_Ingot/20220121-0001");
 
   system("./gnuplot-bash.sh");
 }

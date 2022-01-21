@@ -25,7 +25,7 @@ void Raw_Data::set_Path_To_Folder(std::string nameOfRaw_DataFolder){
 
 
 void Raw_Data::generate_File_List(){
-  std::string exec = "#/bin/bash\ncd Measurements/" + Raw_Data::nameOfRaw_DataFolder + "\nls -1 > ../../list.txt";
+  std::string exec = "#/bin/bash\nrm list.txt\ncd Measurements/" + Raw_Data::nameOfRaw_DataFolder + "\nls -1 > list.txt\nmv list.txt $OLDPWD";
   system(exec.c_str());
   
 }
@@ -127,6 +127,7 @@ void Raw_Data::delete_Row(int rowIndex){
 
 
 
+
 void Raw_Data::clean_Up_Matrix(){
 
   for(int i=0; i!=Raw_Data::rowSize; i++){
@@ -144,6 +145,7 @@ void Raw_Data::clean_Up_Matrix(){
   }
   std::cout << "Data::clean_Up_Matrix() done." << std::endl;
 }
+
 
 
 
@@ -184,6 +186,25 @@ void Raw_Data::print_Col_To_File(int col1, int col2){
 }
 
 
+
+void Raw_Data::plot_Col(int col1, int col2){
+
+  std::string path = "raw_data_col_" + std::to_string(col1) + "," + std::to_string(col2) + ".csv";
+  std::ofstream file("data.csv");
+  for(int i=0; i!=Raw_Data::rowSize; i++){
+    for(int j=0; j!=Raw_Data::colSize; j++){
+      if(j==col1 || j==col2){file << Raw_Data::raw_data[i][j] << ',';}
+    }
+    file << '\n';
+  }
+  system("./gnuplot-bash.sh");
+}
+
+
+
+
+
+
 Raw_Data::Raw_Data(){
   Raw_Data::err_No_Folder();
 }
@@ -197,8 +218,9 @@ Raw_Data::Raw_Data(std::string nameOfRaw_DataFolder){
   Raw_Data::generate_File_List();
   Raw_Data::read_Files();
   Raw_Data::clean_Up_Matrix();
-  Raw_Data::print();
-  Raw_Data::print_Col_To_File(0,1);
+  //  Raw_Data::print();
+  //Raw_Data::print_Col_To_File(0,1);
+  Raw_Data::plot_Col(0,0);
 }
 
 
