@@ -4,11 +4,11 @@
 #include <stdio.h>
 #include <string>
 #include <sstream>
-#include "Data.h"
+#include "Raw_Data.h"
 
 
 
 int main(int argc, char* argv[]){
 
-  Data testData("20211202-0002");
+  Raw_Data testData("20211202-0002");
 }
