@@ -11,4 +11,6 @@
 int main(int argc, char* argv[]){
 
   Raw_Data testData("20211202-0002");
+
+  system("./gnuplot-bash.sh");
 }
