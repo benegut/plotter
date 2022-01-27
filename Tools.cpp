@@ -1,5 +1,10 @@
-#ifndef toolbox_INCLUDED
-#define toolbox_INCLUDED
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <iostream>
+//#include <fftw3.h>
+#include"Tools.h"
+
 
 template<typename T>
 void movingAverage_CArrays(int range, int size, T* arr, T* res){
@@ -29,17 +34,8 @@ void movingAverage_CArrays(int range, int size, T* arr, T* res){
       counterUp++;
     }
 
-    
+
     res[arrCounter] = dum/(denom1 + denom2);
     arrCounter++;
   }
 }
-
-
-int getArraySize(std::string pathToFileList, std::string pathToDataFolder);
-
-int getColumn(int col, int totalCols, double *arr);
-
-
-  
-#endif

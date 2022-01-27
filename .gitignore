@@ -1,0 +1,13 @@
+Measurements/
+gnuplot-iostream.h
+*.sh
+*.txt
+*.csv
+Data
+Plotter
+GPATH
+GRTAGS
+GTAGS
+*#*
+plots/
+xy_plots/
