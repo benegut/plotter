@@ -1,4 +1,5 @@
 Measurements/
+*.sh
 *.txt
 *.csv
 Data
