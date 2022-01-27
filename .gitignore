@@ -1,4 +1,5 @@
 Measurements/
+gnuplot-iostream.h
 *.sh
 *.txt
 *.csv
