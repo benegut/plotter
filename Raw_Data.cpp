@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include "gnuplot-iostream.h"
 #include "Raw_Data.h"
 
 
@@ -25,9 +26,9 @@ void Raw_Data::set_Path_To_Folder(std::string nameOfRaw_DataFolder){
 
 
 void Raw_Data::generate_File_List(){
-  std::string exec = "#/bin/bash\nrm list.txt\ncd Measurements/" + Raw_Data::nameOfRaw_DataFolder + "\nls -1 > list.txt\nmv list.txt $OLDPWD";
+  std::string exec = "#/bin/bash\nrm -f list.txt\ncd Measurements/" + Raw_Data::nameOfRaw_DataFolder + "\nls -1 > $OLDPWD/list.txt";
   system(exec.c_str());
-  
+
 }
 
 
@@ -45,7 +46,7 @@ void Raw_Data::get_Row_Size(){
 
     while(std::getline(raw_datafile,lines))
       counterLines++;
-      
+
     raw_datafile.close();
     counterFiles++;
   }
@@ -55,24 +56,22 @@ void Raw_Data::get_Row_Size(){
 
 
 
-
-
 void Raw_Data::get_Col_Size(){
 
   int counterTabs = 0.0;
   std::string filename;
   std::ifstream listfile("list.txt");
-  
+
   std::getline(listfile, filename);
 
   std::ifstream raw_datafile("Measurements/" + Raw_Data::nameOfRaw_DataFolder + "/" + filename);
   std::string line;
-  
+
   std::getline(raw_datafile, line);
-  
+
   std::stringstream ss(line);
   std::string num;
-      
+
   while(std::getline(ss, num, '\t'))
     counterTabs++;
 
@@ -81,14 +80,12 @@ void Raw_Data::get_Col_Size(){
 
 
 
-
-
 void Raw_Data::read_Files(){
 
   double** matrix = new double*[Raw_Data::rowSize];
   for(int i = 0; i < Raw_Data::rowSize; ++i)
     matrix[i] = new double[Raw_Data::colSize];
-  
+
   std::string filename;
   std::ifstream list("list.txt");
   int i = 0;
@@ -96,16 +93,16 @@ void Raw_Data::read_Files(){
   while(getline(list, filename)){
     std::ifstream raw_datafile("Measurements/" + Raw_Data::nameOfRaw_DataFolder + "/" + filename);
     std::string line;
-    
+
     while(getline(raw_datafile, line, '\n')){
       std::stringstream ss(line);
       std::string num;
       int j = 0;
-      
-      while(getline(ss, num, '\t')){	
-	try{matrix[i][j] = stold(num);}
-	catch(std::exception& e){i--;break;}
-	j++;
+
+      while(getline(ss, num, '\t')){
+    try{matrix[i][j] = stold(num);}
+    catch(std::exception& e){i--;break;}
+    j++;
       }
       i++;
     }
@@ -127,19 +124,18 @@ void Raw_Data::delete_Row(int rowIndex){
 
 
 
-
 void Raw_Data::clean_Up_Matrix(){
 
   for(int i=0; i!=Raw_Data::rowSize; i++){
     for(int j=0; j!=Raw_Data::colSize; j++){
       if(std::isnan(Raw_Data::raw_data[i][j])){
-	Raw_Data::delete_Row(i);
-	break;
+    Raw_Data::delete_Row(i);
+    break;
       }
       else if(std::abs(Raw_Data::raw_data[i][j]) < 10e-10){
-	Raw_Data::delete_Row(i);
-	i--;
-	break;
+    Raw_Data::delete_Row(i);
+    i--;
+    break;
       }
     }
   }
@@ -148,8 +144,7 @@ void Raw_Data::clean_Up_Matrix(){
 
 
 
-
-void Raw_Data::print(){
+void Raw_Data::print_To_Console(){
   for(int i=0; i!=Raw_Data::rowSize; i++){
     for(int j=0; j!=Raw_Data::colSize; j++)
       std::cout  << Raw_Data::raw_data[i][j] << " ";
@@ -171,6 +166,7 @@ void Raw_Data::print_Col_To_File(int col){
   }
   std::cout << "Column " << col << " of raw data printed." << std::endl;
 }
+
 
 
 void Raw_Data::print_Col_To_File(int col1, int col2){
@@ -202,15 +198,12 @@ void Raw_Data::plot_Col(int col1, int col2){
 
 
 
-
-
-
 Raw_Data::Raw_Data(){
   Raw_Data::err_No_Folder();
 }
 
 
- 
+
 Raw_Data::Raw_Data(std::string nameOfRaw_DataFolder){
   Raw_Data::set_Path_To_Folder(nameOfRaw_DataFolder);
   Raw_Data::get_Row_Size();
@@ -218,9 +211,9 @@ Raw_Data::Raw_Data(std::string nameOfRaw_DataFolder){
   Raw_Data::generate_File_List();
   Raw_Data::read_Files();
   Raw_Data::clean_Up_Matrix();
-  //  Raw_Data::print();
+  Raw_Data::print_To_Console();
   //Raw_Data::print_Col_To_File(0,1);
-  Raw_Data::plot_Col(0,0);
+  //  Raw_Data::plot_Col(0,0);
 }
 
 
@@ -230,4 +223,3 @@ Raw_Data::~Raw_Data(){
     delete [] Raw_Data::raw_data[i];
   delete [] Raw_Data::raw_data;
 }
-

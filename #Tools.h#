@@ -4,8 +4,6 @@
 template<typename T>
 void movingAverage_CArrays(int range, int size, T* arr, T* res);
 
+int find_Start();
 
-void writeArrayToFile(int size, double* arr1, double* arr2);
-
-  
 #endif

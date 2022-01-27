@@ -2,7 +2,7 @@
 #include <string>
 #include <sstream>
 #include <iostream>
-#include <fftw3.h>
+//#include <fftw3.h>
 #include"Tools.h"
 
 

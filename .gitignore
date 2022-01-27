@@ -1,3 +1,10 @@
 Measurements/
-token.txt
+*.txt
 *.csv
+Data
+Plotter
+GPATH
+GRTAGS
+GTAGS
+plots/
+xy_plots/

@@ -6,13 +6,14 @@
 
 class Data{
 
+private:
+
 public:
-  void print(int[]);};
+  void print(int[]);
 
 
 
-
-
+};
 
 
 

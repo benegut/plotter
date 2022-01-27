@@ -21,7 +21,7 @@ class Raw_Data{
  public:
   int rowSize, colSize;
   double **raw_data;
-  void print();
+  void print_To_Console();
   void print_Col_To_File(int);
   void print_Col_To_File(int, int);
   void plot_Col(int,int);
