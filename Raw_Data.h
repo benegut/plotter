@@ -2,10 +2,10 @@
 #define RAW_DATA_H
 
 #include <string>
+#include "Data.h"
 
 
-
-class Raw_Data{
+class Raw_Data: public Data{
 
  private:
   void err_No_Folder();
@@ -17,14 +17,13 @@ class Raw_Data{
   void read_Files();
   void delete_Row(int);
   void clean_Up_Matrix();
-  
+
  public:
   int rowSize, colSize;
   double **raw_data;
   void print_To_Console();
-  void print_Col_To_File(int);
-  void print_Col_To_File(int, int);
-  void plot_Col(int,int);
+  void print_To_File(int, int, int, int, int);
+  void plot_Col(int,int, int, int, int);
   Raw_Data();
   Raw_Data(std::string);
   ~Raw_Data();

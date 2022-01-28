@@ -6,9 +6,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <stdarg.h>
 #include "gnuplot-iostream.h"
 #include "Raw_Data.h"
-
+#include "Data.h"
 
 
 void Raw_Data::err_No_Folder(){
@@ -106,12 +107,12 @@ void Raw_Data::read_Files(){
       }
       i++;
     }
-    raw_datafile.close();
-  }
-  list.close();
-  Raw_Data::raw_data = matrix;
-  std::cout << "Data::read_Files() done." << std::endl;
-}
+     raw_datafile.close();
+   }
+   list.close();
+   Raw_Data::raw_data = matrix;
+   std::cout << "Data::read_Files() done." << std::endl;
+ }
 
 
 
@@ -129,13 +130,13 @@ void Raw_Data::clean_Up_Matrix(){
   for(int i=0; i!=Raw_Data::rowSize; i++){
     for(int j=0; j!=Raw_Data::colSize; j++){
       if(std::isnan(Raw_Data::raw_data[i][j])){
-    Raw_Data::delete_Row(i);
-    break;
+        Raw_Data::delete_Row(i);
+        break;
       }
       else if(std::abs(Raw_Data::raw_data[i][j]) < 10e-10){
-    Raw_Data::delete_Row(i);
-    i--;
-    break;
+        Raw_Data::delete_Row(i);
+        i--;
+        break;
       }
     }
   }
@@ -155,45 +156,33 @@ void Raw_Data::print_To_Console(){
 
 
 
-void Raw_Data::print_Col_To_File(int col){
+void Raw_Data::print_To_File(int a=-1, int b=-1, int c=-1, int d=-1, int e=-1){
 
-  std::ofstream file("raw_data_col_" + std::to_string(col) + ".csv");
+  if(a+b+c+d+e == -5)
+    throw std::invalid_argument( "No Columns selected." );
+
+  if(a>=Raw_Data::colSize || b>=Raw_Data::colSize || c>=Raw_Data::colSize || d>=Raw_Data::colSize || e>=Raw_Data::colSize)
+    throw std::invalid_argument( "Selected Column to high." );
+
+  std::ofstream file("raw_data_col_" + Raw_Data::nameOfRaw_DataFolder + ".csv");
+
   for(int i=0; i!=Raw_Data::rowSize; i++){
     for(int j=0; j!=Raw_Data::colSize; j++){
-      if(j==col){file << Raw_Data::raw_data[i][j] << '\t';}
+      if(j==a || j==b || j==c || j==d || j==e)
+        file << Raw_Data::raw_data[i][j] << '\t';
     }
     file << '\n';
   }
-  std::cout << "Column " << col << " of raw data printed." << std::endl;
+  file.close();
 }
 
 
 
-void Raw_Data::print_Col_To_File(int col1, int col2){
+void Raw_Data::plot_Col(int a=-1, int b=-1, int c=-1, int d=-1, int e=-1){
 
-  std::ofstream file("raw_data_col_" + std::to_string(col1) + "," + std::to_string(col2) + ".csv");
-  for(int i=0; i!=Raw_Data::rowSize; i++){
-    for(int j=0; j!=Raw_Data::colSize; j++){
-      if(j==col1 || j==col2){file << Raw_Data::raw_data[i][j] << ',';}
-    }
-    file << '\n';
-  }
-  std::cout << "Column " << col1 << "," << col2 << " of raw data printed." << std::endl;
-}
-
-
-
-void Raw_Data::plot_Col(int col1, int col2){
-
-  std::string path = "raw_data_col_" + std::to_string(col1) + "," + std::to_string(col2) + ".csv";
-  std::ofstream file("data.csv");
-  for(int i=0; i!=Raw_Data::rowSize; i++){
-    for(int j=0; j!=Raw_Data::colSize; j++){
-      if(j==col1 || j==col2){file << Raw_Data::raw_data[i][j] << ',';}
-    }
-    file << '\n';
-  }
-  system("./gnuplot-bash.sh");
+  Gnuplot gp;
+  gp << "plot \"raw_data_col_" + Raw_Data::nameOfRaw_DataFolder + ".csv\" using 2:3 with points\n";
+  //  gp << Raw_Data::raw_data;
 }
 
 
@@ -211,9 +200,9 @@ Raw_Data::Raw_Data(std::string nameOfRaw_DataFolder){
   Raw_Data::generate_File_List();
   Raw_Data::read_Files();
   Raw_Data::clean_Up_Matrix();
-  Raw_Data::print_To_Console();
-  //Raw_Data::print_Col_To_File(0,1);
-  //  Raw_Data::plot_Col(0,0);
+  //Raw_Data::print_To_Console();
+  Raw_Data::print_To_File(0,1,2);
+  Raw_Data::plot_Col();
 }
 
 
