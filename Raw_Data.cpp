@@ -27,9 +27,12 @@ void Raw_Data::set_Path_To_Folder(std::string nameOfRaw_DataFolder){
 
 
 void Raw_Data::generate_File_List(){
-  std::string exec = "#/bin/bash\nrm -f list.txt\ncd Measurements/" + Raw_Data::nameOfRaw_DataFolder + "\nls -1 > $OLDPWD/list.txt";
-  system(exec.c_str());
 
+  // std::string exec = "#/bin/bash\nrm -f list.txt\ncd Measurements/" + Raw_Data::nameOfRaw_DataFolder + "\nls -1 > $OLDPWD/list.txt";
+  // system(exec.c_str());
+
+  std::string exec = "#/bin/bash\nrm -f list.txt\ncd Measurements/" + Raw_Data::nameOfRaw_DataFolder + "\nfind . -type f -iname \"*_1[0-3].txt\" > $OLDPWD/list.txt";
+  system(exec.c_str());
 }
 
 
@@ -83,9 +86,7 @@ void Raw_Data::get_Col_Size(){
 
 void Raw_Data::read_Files(){
 
-  double** matrix = new double*[Raw_Data::rowSize];
-  for(int i = 0; i < Raw_Data::rowSize; ++i)
-    matrix[i] = new double[Raw_Data::colSize];
+  std::vector<std::vector<double>> matrix(Raw_Data::rowSize, std::vector<double>(Raw_Data::colSize));
 
   std::string filename;
   std::ifstream list("list.txt");
@@ -101,76 +102,56 @@ void Raw_Data::read_Files(){
       int j = 0;
 
       while(getline(ss, num, '\t')){
-    try{matrix[i][j] = stold(num);}
-    catch(std::exception& e){i--;break;}
-    j++;
+        try{matrix[i][j] = stold(num);}
+
+        catch(std::exception& e){i--;break;}
+        j++;
       }
       i++;
     }
-     raw_datafile.close();
-   }
-   list.close();
-   Raw_Data::raw_data = matrix;
-   std::cout << "Data::read_Files() done." << std::endl;
- }
-
-
-
-void Raw_Data::delete_Row(int rowIndex){
-  for(int i=rowIndex;i!=Raw_Data::rowSize-1;i++)
-    Raw_Data::raw_data[i] = Raw_Data::raw_data[i+1];
-  //  delete [] Raw_Data::raw_data[Raw_Data::rowSize];
-  --Raw_Data::rowSize;
+    raw_datafile.close();
+  }
+  list.close();
+  Raw_Data::raw_data = matrix;
+  std::cout << "Raw_Data::read_Files() done." << std::endl;
 }
 
 
 
-void Raw_Data::clean_Up_Matrix(){
+void Raw_Data::clean_up(){
 
-  for(int i=0; i!=Raw_Data::rowSize; i++){
-    for(int j=0; j!=Raw_Data::colSize; j++){
-      if(std::isnan(Raw_Data::raw_data[i][j])){
-        Raw_Data::delete_Row(i);
-        break;
-      }
-      else if(std::abs(Raw_Data::raw_data[i][j]) < 10e-10){
-        Raw_Data::delete_Row(i);
-        i--;
-        break;
+ repeat:
+  for(auto i = Raw_Data::raw_data.begin(); i<Raw_Data::raw_data.end(); i++){
+    for(auto j: *i){
+      if(abs(j)<10e-14){
+        Raw_Data::raw_data.erase(i);
+        goto repeat;
       }
     }
   }
-  std::cout << "Data::clean_Up_Matrix() done." << std::endl;
+  std::cout << "Raw_Data::clean_up() done." << std::endl;
 }
 
 
 
 void Raw_Data::print_To_Console(){
-  for(int i=0; i!=Raw_Data::rowSize; i++){
-    for(int j=0; j!=Raw_Data::colSize; j++)
-      std::cout  << Raw_Data::raw_data[i][j] << " ";
+  for(auto i: Raw_Data::raw_data){
+    for(auto j: i)
+      std::cout  << j << " ";
     std::cout << std::endl;
-    if(i==10){break;}
+    if(i==Raw_Data::raw_data[10]){break;}
   }
 }
 
 
 
-void Raw_Data::print_To_File(int a=-1, int b=-1, int c=-1, int d=-1, int e=-1){
+void Raw_Data::print_To_File(){
 
-  if(a+b+c+d+e == -5)
-    throw std::invalid_argument( "No Columns selected." );
+  std::ofstream file("tmp.csv");
 
-  if(a>=Raw_Data::colSize || b>=Raw_Data::colSize || c>=Raw_Data::colSize || d>=Raw_Data::colSize || e>=Raw_Data::colSize)
-    throw std::invalid_argument( "Selected Column to high." );
-
-  std::ofstream file("raw_data_col_" + Raw_Data::nameOfRaw_DataFolder + ".csv");
-
-  for(int i=0; i!=Raw_Data::rowSize; i++){
-    for(int j=0; j!=Raw_Data::colSize; j++){
-      if(j==a || j==b || j==c || j==d || j==e)
-        file << Raw_Data::raw_data[i][j] << '\t';
-    }
+  for(auto i: Raw_Data::raw_data){
+    for(auto j: i)
+      file << j << '\t';
     file << '\n';
   }
   file.close();
@@ -178,11 +159,26 @@ void Raw_Data::print_To_File(int a=-1, int b=-1, int c=-1, int d=-1, int e=-1){
 
 
 
-void Raw_Data::plot_Col(int a=-1, int b=-1, int c=-1, int d=-1, int e=-1){
+void Raw_Data::plot_Col(int a){
 
+  Raw_Data::print_To_File();
   Gnuplot gp;
-  gp << "plot \"raw_data_col_" + Raw_Data::nameOfRaw_DataFolder + ".csv\" using 2:3 with points\n";
-  //  gp << Raw_Data::raw_data;
+  gp << "plot \"tmp.csv\" using " + std::to_string(a+1) + " with lines\n";
+}
+
+
+
+void Raw_Data::get_Col(int col){
+
+  if(col >= (int)Raw_Data::raw_data[0].size())
+    throw std::invalid_argument( "Raw_Data::get_col(): Selected Column to high." );
+
+  std::vector<float> array(Raw_Data::rowSize);
+
+  for(int i=0; i<(int)Raw_Data::raw_data.size(); i++)
+    array[i] =  (float)Raw_Data::raw_data[i][col];
+
+  Raw_Data::column = array;
 }
 
 
@@ -199,16 +195,10 @@ Raw_Data::Raw_Data(std::string nameOfRaw_DataFolder){
   Raw_Data::get_Col_Size();
   Raw_Data::generate_File_List();
   Raw_Data::read_Files();
-  Raw_Data::clean_Up_Matrix();
-  //Raw_Data::print_To_Console();
-  Raw_Data::print_To_File(0,1,2);
-  Raw_Data::plot_Col();
+  Raw_Data::clean_up();
+  Raw_Data::print_To_File();
 }
 
 
 
-Raw_Data::~Raw_Data(){
-  for (int i = 0; i < Raw_Data::rowSize; ++i)
-    delete [] Raw_Data::raw_data[i];
-  delete [] Raw_Data::raw_data;
-}
+Raw_Data::~Raw_Data(){}
