@@ -12,3 +12,4 @@ GTAGS
 plots/
 xy_plots/
 *~
+*.png

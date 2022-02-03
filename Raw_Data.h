@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <string>
-#include "Data.h"
+
 
 
 class Raw_Data{
@@ -31,7 +31,8 @@ class Raw_Data{
 
   std::vector<std::vector<double>> extrema;
   void movingAverage(int);
-  void find_Extrema();
+  void find_Extrema(std::vector<float>, float, bool);
+  void low_Pass_Filter(float, float);
 
   Raw_Data();
   Raw_Data(std::string);

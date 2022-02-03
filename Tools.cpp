@@ -5,6 +5,9 @@
 //#include <fftw3.h>
 #include"Raw_Data.h"
 #include <vector>
+#include "persistence1d.hpp"
+
+using namespace p1d;
 
 
 
@@ -44,38 +47,46 @@ void Raw_Data::movingAverage(int range){
 
 
 
-void Raw_Data::find_Extrema(){
+void Raw_Data::find_Extrema(std::vector<float> input, float persistence, bool PRINT_FLAG){
 
-  int size = (int)Raw_Data::polished_column.size();
-  int dif = 1;
-  std::vector<int> min_max;
+  Persistence1D p;
+  p.RunPersistence(input);
+  std::vector<TPairedExtrema> Extrema;
+  p.GetPairedExtrema(Extrema,0.6);
 
-  if (Raw_Data::polished_column[0] > Raw_Data::polished_column[dif])
-    min_max.push_back(0);
-  else if (Raw_Data::polished_column[0] < Raw_Data::polished_column[dif])
-    min_max.push_back(0);
-
-  for(int i=dif; i < size-1-dif; i++){
-
-    if ((Raw_Data::polished_column[i-dif] > Raw_Data::polished_column[i]) and
-        (Raw_Data::polished_column[i] < Raw_Data::polished_column[i+dif]))
-      min_max.push_back(i);
-    else if ((Raw_Data::polished_column[i-dif] < Raw_Data::polished_column[i]) and
-             (Raw_Data::polished_column[i] > Raw_Data::polished_column[i+dif]))
-      min_max.push_back(i);
+  if(PRINT_FLAG){
+    for(auto it = Extrema.begin(); it != Extrema.end(); it++){
+      std::cout << "Persistence: " << (*it).Persistence
+                << " minimum index: " << (*it).MinIndex
+                << " maximum index: " << (*it).MaxIndex
+                << std::endl;
+    }
   }
 
-  if (Raw_Data::polished_column[size-1] > Raw_Data::polished_column[size-dif])
-    min_max.push_back(size-1);
-  else if (Raw_Data::polished_column[size-1] < Raw_Data::polished_column[size-dif])
-    min_max.push_back(size-1);
-
-
-  std::vector<std::vector<double>> extrema(min_max.size(), std::vector<double>(2));
-
-  for(int i=0; i<(int)min_max.size(); i++){
-    extrema[i][0] = (double)min_max[i];
-    extrema[i][1] = Raw_Data::polished_column[min_max[i]];
+  std::vector<std::vector<double>> extrema(2*Extrema.size(), std::vector<double>(2));
+  int i = 0;
+  for(auto it = Extrema.begin(); it != Extrema.end(); it++){
+    int ind1 = (*it).MinIndex;
+    extrema[i] = {(double)ind1,input[ind1]};
+    ++i;
+    int ind2 = (*it).MaxIndex;
+    extrema[i] = {(double)ind2,input[ind2]};
+    ++i;
   }
   Raw_Data::extrema = extrema;
+}
+
+
+
+void Raw_Data::low_Pass_Filter(float beta, float y0){
+
+  if(beta<0 || beta>1)
+    throw std::invalid_argument( "Raw_Data::low_Pass_Filter(): beta must be within 0 and 1." );
+
+  int size = (int)Raw_Data::column.size();
+  std::vector<float> y(size);
+  y[0] = y0;
+  for(int i=1; i<size; i++)
+    y[i] = beta*Raw_Data::column[i] + (1-beta)*y[i-1];
+  Raw_Data::polished_column = y;
 }

@@ -9,7 +9,7 @@
 #include <stdarg.h>
 #include "gnuplot-iostream.h"
 #include "Raw_Data.h"
-#include "Data.h"
+
 
 
 void Raw_Data::err_No_Folder(){
@@ -31,7 +31,7 @@ void Raw_Data::generate_File_List(){
   // std::string exec = "#/bin/bash\nrm -f list.txt\ncd Measurements/" + Raw_Data::nameOfRaw_DataFolder + "\nls -1 > $OLDPWD/list.txt";
   // system(exec.c_str());
 
-  std::string exec = "#/bin/bash\nrm -f list.txt\ncd Measurements/" + Raw_Data::nameOfRaw_DataFolder + "\nfind . -type f -iname \"*_1[0-3].txt\" > $OLDPWD/list.txt";
+   std::string exec = "#/bin/bash\nrm -f list.txt\ncd Measurements/" + Raw_Data::nameOfRaw_DataFolder + "\nfind . -type f -iname \"*_1[0-3].txt\" > $OLDPWD/list.txt";
   system(exec.c_str());
 }
 
@@ -127,6 +127,10 @@ void Raw_Data::clean_up(){
         Raw_Data::raw_data.erase(i);
         goto repeat;
       }
+      else if(std::isnan(j)){
+        Raw_Data::raw_data.erase(i);
+        goto repeat;
+      }
     }
   }
   std::cout << "Raw_Data::clean_up() done." << std::endl;
@@ -196,7 +200,7 @@ Raw_Data::Raw_Data(std::string nameOfRaw_DataFolder){
   Raw_Data::generate_File_List();
   Raw_Data::read_Files();
   Raw_Data::clean_up();
-  Raw_Data::print_To_File();
+  // Raw_Data::print_To_File();
 }
 
 
