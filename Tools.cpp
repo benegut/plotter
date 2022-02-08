@@ -63,17 +63,22 @@ void Raw_Data::find_Extrema(std::vector<float> input, float persistence, bool PR
     }
   }
 
-  std::vector<std::vector<double>> extrema(2*Extrema.size(), std::vector<double>(2));
+
+  std::vector<int> extrema(2*Extrema.size());
+  std::vector<std::vector<double>> extreme_Points(2*Extrema.size(), std::vector<double>(2));
   int i = 0;
   for(auto it = Extrema.begin(); it != Extrema.end(); it++){
     int ind1 = (*it).MinIndex;
-    extrema[i] = {(double)ind1,input[ind1]};
+    extreme_Points[i] = {(double)ind1,input[ind1]};
+    extrema[i] = ind1;
     ++i;
     int ind2 = (*it).MaxIndex;
-    extrema[i] = {(double)ind2,input[ind2]};
+    extreme_Points[i] = {(double)ind2,input[ind2]};
+    extrema[i] = ind2;
     ++i;
   }
   Raw_Data::extrema = extrema;
+  Raw_Data::extreme_Points = extreme_Points;
 }
 
 

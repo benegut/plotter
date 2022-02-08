@@ -29,7 +29,8 @@ class Raw_Data{
   void plot_Col(int);
   void get_Col(int);
 
-  std::vector<std::vector<double>> extrema;
+  std::vector<int> extrema;
+  std::vector<std::vector<double>> extreme_Points;
   void movingAverage(int);
   void find_Extrema(std::vector<float>, float, bool);
   void low_Pass_Filter(float, float);
